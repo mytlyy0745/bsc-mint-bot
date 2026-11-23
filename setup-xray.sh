@@ -22,6 +22,12 @@ if [ ${#PRIV} -ne 43 ] || [ ${#PUB} -ne 43 ]; then
   exit 1
 fi
 
+# 3.5 日志目录改属主为 xray（服务以 xray 用户运行，否则写日志会 permission denied）
+mkdir -p /var/log/xray
+chown -R xray:xray /var/log/xray
+touch /var/log/xray.log
+chown xray:xray /var/log/xray.log
+
 # 4. 写 Xray 配置
 cat > /usr/local/etc/xray/config.json << EOF
 {
@@ -74,7 +80,7 @@ EOF
 xray -test -config /usr/local/etc/xray/config.json
 systemctl restart xray
 sleep 2
-systemctl is-active xray
+systemctl is-active xray || echo "XRAY_NOT_ACTIVE"
 ss -tlnp | grep -w $PORT || netstat -tlnp 2>/dev/null | grep -w $PORT || echo "PORT_CHECK_MANUAL"
 
 # 6. 输出客户端链接（保存到文件并打印）

@@ -1,0 +1,7 @@
+# BSC 打新 Agent 依赖
+# 安装：pip install -r requirements.txt
+# 建议用 Python 3.10+，最好建 venv 再装。
+
+web3>=6.0,<7.0
+requests>=2.31,<3.0
+eth-account>=0.10

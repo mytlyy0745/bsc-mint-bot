@@ -1,0 +1,4 @@
+Bot username: @Renwuzhijia_bot
+Bot link: t.me/Renwuzhijia_bot
+Telegram user/chat ID (Li): 9114908461
+Token file: ~/workspace/bsc-mint-bot/telegram-token.txt (chmod 600, token NOT in this file)

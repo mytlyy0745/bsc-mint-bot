@@ -1,0 +1,7 @@
+telegram-token.txt
+sol-transfer/
+__pycache__/
+*.pyc
+*.json
+!config.json
+!requirements.txt

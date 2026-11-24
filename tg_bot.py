@@ -165,6 +165,38 @@ class TgBot:
             payload["reply_markup"] = reply_markup
         return self.api("sendMessage", payload)
 
+    def send_main_menu(self, text=None):
+        """发主菜单：图文卡片 + 内联按钮，同时挂上底部常驻键盘。"""
+        mode = ""
+        try:
+            cfg = load_config(DEFAULT_CONFIG)
+            mode = cfg.get("mode", "simulate")
+        except Exception:
+            pass
+        body = text or (
+            "🤖 BSC 打新 Agent\n"
+            f"📍 模式：{mode}（默认只模拟）\n"
+            "点下面的按钮就行，不用打字。"
+        )
+        inline = {"inline_keyboard": [
+            [{"text": "📡 雷达", "callback_data": "menu:radar"},
+             {"text": "👛 持仓", "callback_data": "menu:holdings"}],
+            [{"text": "📊 状态", "callback_data": "menu:status"},
+             {"text": "⚙️ 模式", "callback_data": "menu:mode"}],
+        ]}
+        # 底部常驻键盘：一直留在输入框上方，点一下就发对应文字
+        reply_kb = {
+            "keyboard": [
+                [{"text": "📡 雷达"}, {"text": "👛 持仓"}],
+                [{"text": "📊 状态"}, {"text": "⚙️ 模式"}],
+            ],
+            "resize_keyboard": True,
+            "is_persistent": True,
+        }
+        # 先发主菜单卡片（内联按钮），再把常驻键盘挂上
+        self.send(body, reply_markup=inline)
+        self.send("👇 底部菜单已就绪，点按钮就行。", reply_markup=reply_kb)
+
     def send_card(self, text, buttons=None):
         """发一张卡片（带按钮）。按钮只记录决定，不直接发交易。"""
         markup = None
@@ -207,12 +239,9 @@ def handle_command(bot, cfg, text, chat_id):
     bsc = wallet.get("bsc_address", "")
 
     if cmd == "/start":
-        bot.send(
-            "👋 打新 Agent 已就绪\n"
-            f"📍 模式：{mode}（默认只模拟）\n"
-            f"👛 钱包：{short_addr(bsc)}\n"
-            "命令：/status /radar /holdings /mode"
-        )
+        bot.send_main_menu()
+    elif cmd == "/menu":
+        bot.send_main_menu()
     elif cmd == "/status":
         holdings = load_json(HOLDINGS_FILE, [])
         records = load_json(os.path.join(BASE_DIR, "mint_records.json"), [])
@@ -263,12 +292,53 @@ def handle_command(bot, cfg, text, chat_id):
         ]]
         bot.send_card(f"当前模式：{mode}\n切到「自动」要再确认一次。", buttons=buttons)
     else:
-        bot.send("未知命令。可用：/start /status /radar /holdings /mode")
+        bot.send("未知命令。点底部菜单，或用 /menu 回到主菜单。")
+
+
+# ---------------- 底部常驻键盘 + 主菜单回调 ----------------
+
+# 底部按钮文字 -> 对应命令
+MENU_TEXT = {
+    "📡 雷达": "/radar",
+    "👛 持仓": "/holdings",
+    "📊 状态": "/status",
+    "⚙️ 模式": "/mode",
+    "🏠 主菜单": "/menu",
+}
+
+
+def handle_menu_text(bot, cfg, text, chat_id):
+    """底部常驻键盘点出来的文字，按对应命令处理。"""
+    cmd = MENU_TEXT.get(text.strip())
+    if cmd:
+        handle_command(bot, cfg, cmd, chat_id)
+        return True
+    return False
+
+
+def handle_menu_callback(bot, cfg, callback):
+    """主菜单内联按钮：menu:radar / menu:holdings / menu:status / menu:mode。"""
+    data = callback.get("data", "")
+    _, _, target = data.partition(":")
+    bot.api("answerCallbackQuery", {
+        "callback_query_id": callback["id"],
+    })
+    cmd = {
+        "radar": "/radar",
+        "holdings": "/holdings",
+        "status": "/status",
+        "mode": "/mode",
+    }.get(target)
+    if cmd:
+        handle_command(bot, cfg, cmd, callback.get("message", {}).get("chat", {}).get("id", bot.chat_id))
 
 
 def handle_callback(bot, cfg, callback):
     """处理按钮回调：只记录决定，不发交易。"""
     data = callback.get("data", "")
+    if data.startswith("menu:"):
+        handle_menu_callback(bot, cfg, callback)
+        return
     action, _, target = data.partition(":")
     user = callback.get("from", {}).get("username", "")
     record_decision({
@@ -320,6 +390,10 @@ def main():
                     text = msg.get("text", "")
                     if text.startswith("/"):
                         handle_command(bot, cfg, text, msg["chat"]["id"])
+                    elif text.strip():
+                        # 底部常驻键盘的按钮文字
+                        if not handle_menu_text(bot, cfg, text, msg["chat"]["id"]):
+                            bot.send("点底部菜单，或用 /menu 回到主菜单。")
                 elif "callback_query" in upd:
                     handle_callback(bot, cfg, upd["callback_query"])
             except Exception as e:

@@ -1,1 +1,61 @@
-{"_comment":"BSC 打新 Agent 共享配置。所有脚本都读这一个文件。token 不放这里，从 telegram-token.txt 读。","agent_id_registry":"0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F","bsc_rpc":["https://bsc-dataseed.binance.org/","https://bsc-dataseed1.defibit.io/","https://bsc-dataseed1.ninicoin.io/","https://bsc-dataseed2.defibit.io/","https://bsc-dataseed3.defibit.io/","https://bsc-dataseed4.defibit.io/"],"files":{"decisions":"decisions.json","experts":"experts.json","holdings":"holdings.json","listings":"listings.json","mint_records":"mint_records.json","radar":"radar.json","scanner_state":"scanner_state.json","trades":"trades.json"},"mint":{"max_gas_per_day_bnb":0.003,"max_gas_per_tx_bnb":0.0001,"max_minted_pct":95,"max_per_wallet":5,"max_projects_per_round":4,"max_total_supply":10000,"min_agent_wallets_1h":300,"min_agent_wallets_5min":100,"min_identical_call_wallets":2,"sim_fail_giveup_after":3,"sim_fail_retry_minutes":30},"mode":"simulate","safety":{"airdrop_ratio_threshold_pct":30,"max_contracts_per_deployer_24h":3,"min_pool_liquidity_usd":50},"sell":{"clear_below_half_of_list":true,"first_target_usd":0.5,"half_sell_factor":1.1,"hold_clear_below_usd":0.3,"hold_days_no_activity":7,"peak_drawdown_pct":40,"quick_sell_factor":0.95,"relist_after_hours":6,"token_launch_sell_at_usd":30},"telegram":{"bot_username":"Renwuzhijia_bot","chat_id":9114908461,"token_file":"telegram-token.txt"},"wallet":{"bsc_address":"0x0c2fC9a2aFf5e3B5470Fe8a913A77c84E890FEfD","solana_address":"HfGPViFxTEzuBdxLX8V4zadRQiGXPfaiMKZHrWwcNNsE"}}
+{
+  "_comment": "BSC 打新 Agent 共享配置。所有脚本都读这一个文件。token 不放这里，从 telegram-token.txt 读。",
+  "agent_id_registry": "0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F",
+  "bsc_rpc": [
+    "https://bsc-dataseed.binance.org/",
+    "https://bsc-dataseed1.defibit.io/",
+    "https://bsc-dataseed1.ninicoin.io/",
+    "https://bsc-dataseed2.defibit.io/",
+    "https://bsc-dataseed3.defibit.io/",
+    "https://bsc-dataseed4.defibit.io/"
+  ],
+  "files": {
+    "decisions": "decisions.json",
+    "experts": "experts.json",
+    "holdings": "holdings.json",
+    "listings": "listings.json",
+    "mint_records": "mint_records.json",
+    "radar": "radar.json",
+    "scanner_state": "scanner_state.json",
+    "trades": "trades.json"
+  },
+  "mint": {
+    "max_gas_per_day_bnb": 0.003,
+    "max_gas_per_tx_bnb": 0.0001,
+    "max_minted_pct": 95,
+    "max_per_wallet": 5,
+    "max_projects_per_round": 4,
+    "max_total_supply": 10000,
+    "min_agent_wallets_1h": 300,
+    "min_agent_wallets_5min": 100,
+    "min_identical_call_wallets": 2,
+    "sim_fail_giveup_after": 3,
+    "sim_fail_retry_minutes": 30
+  },
+  "mode": "auto",
+  "safety": {
+    "airdrop_ratio_threshold_pct": 30,
+    "max_contracts_per_deployer_24h": 3,
+    "min_pool_liquidity_usd": 50
+  },
+  "sell": {
+    "clear_below_half_of_list": true,
+    "first_target_usd": 0.5,
+    "half_sell_factor": 1.1,
+    "hold_clear_below_usd": 0.3,
+    "hold_days_no_activity": 7,
+    "peak_drawdown_pct": 40,
+    "quick_sell_factor": 0.95,
+    "relist_after_hours": 6,
+    "token_launch_sell_at_usd": 30
+  },
+  "telegram": {
+    "bot_username": "Renwuzhijia_bot",
+    "chat_id": 9114908461,
+    "token_file": "telegram-token.txt"
+  },
+  "wallet": {
+    "bsc_address": "0x0c2fC9a2aFf5e3B5470Fe8a913A77c84E890FEfD",
+    "solana_address": "HfGPViFxTEzuBdxLX8V4zadRQiGXPfaiMKZHrWwcNNsE"
+  }
+}
